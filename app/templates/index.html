@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chatbot Assistant</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .chat-container {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            height: 80vh;
+        }
+        .chat-header {
+            background: #007bff;
+            color: #fff;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            padding: 10px 0;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+        .chat-window {
+            flex: 1;
+            background: #f9f9f9;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .chat-window .message {
+            display: inline-block;
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 75%;
+            line-height: 1.6;
+            word-wrap: break-word;
+        }
+        .chat-window .user-message {
+            align-self: flex-end;
+            background: #007bff;
+            color: #fff;
+        }
+        .chat-window .bot-message {
+            align-self: flex-start;
+            background: #e9ecef;
+            color: #333;
+        }
+        .chat-input {
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+            background: #f4f4f9;
+        }
+        .chat-input input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            outline: none;
+            background: #fff;
+        }
+        .chat-input button {
+            background: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .chat-input button:hover {
+            background: #0056b3;
+        }
+        #loader {
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .loader {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">Support Agent Chatbot for CDP</div>
+        <div class="chat-window" id="chat-window"></div>
+        <div id="loader" class="loader"></div>
+        <div class="chat-input">
+            <input type="text" id="prompt" placeholder="Type your message here...">
+            <button onclick="getResponse()">Send</button>
+        </div>
+    </div>
+
+    <script>
+    function addMessage(content, isUser) {
+        const messageClass = isUser ? "user-message" : "bot-message";
+        
+        // Split content by '@34455' and add each part as a separate line
+        const lines = content.split('@34455').map(line => line.trim()).filter(line => line);
+        
+        let formattedMessage = "";
+        lines.forEach(line => {
+            formattedMessage += `<div class="message ${messageClass}">${line}</div>`;
+        });
+        
+        $('#chat-window').append(formattedMessage);
+        $('#chat-window').scrollTop($('#chat-window')[0].scrollHeight);
+    }
+
+    function getResponse() {
+        const userInput = $('#prompt').val().trim();
+        if (!userInput) {
+            alert("Please enter a message.");
+            return;
+        }
+
+        addMessage(userInput, true); // Add user's message to chat window
+        $('#prompt').val(""); // Clear input field
+
+        // Show loader
+        $('#loader').show();
+
+        $.ajax({
+            url: '/process',
+            method: 'POST',
+            data: {
+                user_prompt: userInput
+            },
+            success: function(data) {
+                addMessage(data.response, false); // Add bot's response
+            },
+            error: function() {
+                addMessage("Sorry, there was an error processing your request.", false);
+            },
+            complete: function() {
+                // Hide loader after request is complete
+                $('#loader').hide();
+            }
+        });
+    }
+
+    // Trigger response on pressing Enter
+    $(document).ready(function() {
+        $('#prompt').on('keydown', function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault(); // Prevent default form submission
+                getResponse();
+            }
+        });
+    });
+    </script>
+</body>
+</html>
