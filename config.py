@@ -1,5 +1,5 @@
 class Config:
-    API_KEY = "AIzaSyAMukTKNzaLOa7pN-tqwhPl-V9BXu-SdDw"
+    API_KEY = "Change it with api key"
     DOCUMENTATION_URLS = {
         "segment": "https://segment.com/docs/?ref=nav",
         "mparticle": "https://docs.mparticle.com/",
