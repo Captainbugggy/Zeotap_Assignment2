@@ -3,6 +3,7 @@
 ## Project Overview
 AI-powered chatbot for answering "how-to" questions across Customer Data Platforms.
 -Real time demo https://chatbot-h3mz.onrender.com/
+-Please wait while opening demo it might take some time to open as it is deployed under trial period
 
 ## 🚀 Features
 - Support for Segment, mParticle, Lytics, Zeotap
